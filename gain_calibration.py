@@ -48,7 +48,7 @@ def fit_distribution(run_num, attr='sipm1.threeSampleAmpl', draw=False):
 
 
 def fit_gain(run_numbers, make_plot=False,
-             attr='threeSampleAmpl', file_name='',
+             attr='sipm1.threeSampleAmpl', file_name='',
              plot_title=''):
     """given list of run numbers, fit with 2nd order polynomial.
     returns parameters and their errors in tuple,

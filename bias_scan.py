@@ -11,7 +11,7 @@ def sigma_from_cov(params, cov):
     return np.std(breakdowns)
 
 
-def make_summary_plot(run_lists):
+def make_summary_plot(run_lists, file_descriptor, attr='sipm1.threeSampleAmpl'):
     """make summary plot based on run list"""
     biases = []
     gains = []
@@ -22,7 +22,7 @@ def make_summary_plot(run_lists):
     quad_errs = []
     for row in sorted(run_lists):
         biases.append(row[0])
-        gain_out = fit_gain(row[1])
+        gain_out = fit_gain(row[1], attr=attr)
         out_tuple = gain_out[0]
         gains.append(out_tuple[0])
         gainerrs.append(out_tuple[3])
@@ -60,7 +60,7 @@ def make_summary_plot(run_lists):
     fitline = [i*coeffs[0] + coeffs[1] for i in biases] + [0]
     fitbiases = biases + [breakdown]
 
-    ax1.set_title('bias scan %s' % 'test')
+    ax1.set_title('bias scan %s' % file_descriptor)
     fitplot = ax1.plot(fitbiases, fitline, 'r-')
     gainplot = ax1.errorbar(
         biases, gains, yerr=gainerrs, fmt='ro', markersize=10)
@@ -90,7 +90,7 @@ def make_summary_plot(run_lists):
                ['gain', 'charge', 'pes', 'gain fit'],
                loc='best', numpoints=1)
 
-    # plt.savefig('pdfs/breakdownPlot%s.pdf' % file_descriptor)
+    plt.savefig('pdfs/breakdownPlot%s.pdf' % file_descriptor)
     plt.show()
 
     quadploterrs = 0.5/np.sqrt(quad_terms)*quad_errs
@@ -98,4 +98,7 @@ def make_summary_plot(run_lists):
     plt.xlim(min(biases) - 0.1, max(biases) + 0.1)
     plt.xlabel('bias [V]')
     plt.ylabel('sqrt(quadratic term) [%]')
+    plt.title('quadratic terms %s' % file_descriptor)
+
+    plt.savefig('pdfs/quadraticTerms%s.pdf' % file_descriptor)
     plt.show()

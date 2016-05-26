@@ -20,19 +20,20 @@ def poly(x, coeffs):
                    for i, c in enumerate(coeffs)], 0)
 
 
-def fit_distribution(run_num, attr='sipm1.threeSampleAmpl', draw=False):
+def fit_distribution(run_num, attr1='FitResult_Energy', attr2='FitResult_XtalNum==0',  draw=False):
     """give an output file number from fitter,
     fit peak to find mean and variance with their errors"""
-    in_file = TFile("/home/newg2/Workspace/L1Tests/crunchedFiles/labrun_%05i_crunched.root" % run_num)
-    tree = in_file.Get("t")
-    tree.Draw("%s>>h1(200)" % attr, "", "goff")
+    #in_file = TFile("/home/newg2/Workspace/L1Tests/crunchedFiles/gm2uw_%05i_analysis.root" % run_num)
+    in_file = TFile("/Users/kimsiang/Work/UWCENPA/gm2/SLAC2016/Data/gm2uw_run%05i_analysis.root" % run_num)
+    tree = in_file.Get("slacAnalyzer/eventTree")
+    tree.Draw("%s>>h1(200)" % attr1, attr2, "goff")
     hist = gROOT.FindObject("h1")
     mean = hist.GetMean()
     std = hist.GetRMS()
     low = mean - 3*std
     high = mean + 3*std
     tree.Draw("%s>>h2(100,%s,%s)" %
-              (attr, str(low), str(high)), "", "goff")
+              (attr1, str(low), str(high)), attr2, "goff")
     hist = gROOT.FindObject("h2")
     hist.Fit("gaus", "0q")
     func = hist.GetFunction("gaus")
@@ -48,7 +49,7 @@ def fit_distribution(run_num, attr='sipm1.threeSampleAmpl', draw=False):
 
 
 def fit_gain(run_numbers, make_plot=False,
-             attr='sipm1.threeSampleAmpl', file_name='',
+             attr1='FitResult_Energy', attr2='FitResult_XtalNum==0', file_name='',
              plot_title=''):
     """given list of run numbers, fit with 2nd order polynomial.
     returns parameters and their errors in tuple,
@@ -57,7 +58,7 @@ def fit_gain(run_numbers, make_plot=False,
     variances = []
     var_errors = []
     for run in run_numbers:
-        mean, sig, mean_err, sig_err = fit_distribution(run, attr=attr)
+        mean, sig, mean_err, sig_err = fit_distribution(run, attr1=attr1, attr2=attr2)
         means.append(mean)
         variances.append(sig*sig)
         var_errors.append(2*sig*sig_err)
